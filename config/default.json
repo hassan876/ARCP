@@ -1,0 +1,4 @@
+{
+    "mongoURI": "mongodb+srv://teamfypproject:leadsme@arcontentcreationplatef.xz8t4.mongodb.net/<dbname>?retryWrites=true&w=majority",
+    "jwtSecret": "fyparc"
+}
