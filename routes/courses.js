@@ -69,23 +69,14 @@ router.post('/', auth, upload.single('ImagePlaceholder'), async (req, res) => {
     // Pulling required Information from the Request 
     const { title , subTitle , description} = req.body;
 
-    const strTitle = String(title).trim().toLowerCase();
-
-
-
-    const existingCourse = await  Course.find({"title": strTitle});
-
-    console.log(existingCourse.title===strTitle);
-    
-    
-
-    if(existingCourse.length>0)
-    {
-        res.send("course name already exists");
-        console.log(existingCourse);
-    }else{
-    
-
+    // const strTitle = String(title).trim().toLowerCase();
+    // const existingCourse = await  Course.find({"title": strTitle});
+    // console.log(existingCourse.title===strTitle);
+    // if(existingCourse.length>0)
+    // {
+    //     res.send("course name already exists");
+    //     console.log(existingCourse);
+    // }else{
     try {
         // Creation object of the Course Model
         course = new Course({
@@ -107,7 +98,7 @@ router.post('/', auth, upload.single('ImagePlaceholder'), async (req, res) => {
     catch (error) {
         res.status(500).send('Server Error');
     }
-}
+// }
 });
 
 /**

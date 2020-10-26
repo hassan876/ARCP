@@ -2,6 +2,8 @@ const express = require('express');
 const Course = require('../models/Course');
 const auth = require('../middlewares/auth');
 const RegisterCourse = require('../models/RegisterCourse');
+const { isValidObjectId } = require('mongoose');
+const { object } = require('@hapi/joi');
 const router = express.Router();
 
 /**
@@ -13,22 +15,47 @@ const router = express.Router();
 router.delete('/:id', auth, async (req, res) => {
     try {
         const courseID = req.params.id;
-        const courseUnRegister = await  RegisterCourse.find({"course_id": courseID});
+    
+        const courseUnregister = await RegisterCourse.find({course_id: courseID});
+        if(courseUnregister.length==0)
+        {
+          return  res.status(404).send("not found");
+        }
+        const learner_id = courseUnregister[0].learner_id.toString();
+        if (learner_id !== req.user.id)
+        return res.status(401).send("un authorized user");
+        
+
+        await RegisterCourse.deleteOne({course_id: courseID , learner_id: req.user.id});
+        res.status(200).send("un registered");
+
+
+
+
       
-        console.log(courseUnRegister);
-        if (!courseUnRegister) return res.status(404).json({ msg: 'Course with this id does not exists' });
 
-        // Make sure user owns course
-        if (courseUnRegister.learner_id.toString() !== req.user.id)
-            return res.status(401).json({ msg: 'Not authorized' });
+        // //  await RegisterCourse.deleteMany({ course_id: courseID}).then((operration) => {
+        // //     if(operration.ok === 1){
+        // //         res.status(200);
+        // //     }
+        // //     else{
+        // //         res.status(500).send('Unregisteration Failed. it\' server error. ');
+        // //     }
+        // // });
+       
 
-        await RegisterCourse.findByIdAndRemove(req.params.id);
-        res.status(200).json({ msg: 'Course successfully unregistered' });
+        // const quere = {learner_id : req.user.id , course_id: courseID};
+        // console.log(quere);
+        // // await RegisterCourse.deleteMany(quere , function(err , obj) {
+        // //     if (err) throw err;
+            
+        // // });
+      
+        
 
     } catch (err) {
-        
         console.error(err.message);
-        res.status(500).send('Server error');
+       return res.status(500).send('Server error');
     }
 
 });
